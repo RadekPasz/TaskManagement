@@ -28,4 +28,20 @@ def get_board(board_id: int):
     """, (board_id,)).fetchone()
     if board is None:
         return {"error": "Board not found"}
+    
     return dict(board)
+
+@router.get("/{board_id}/lists")
+def get_board_lists(board_id: int):   
+    conn = get_db()
+    lists = conn.execute("""
+        SELECT
+            l.list_id,
+            l.name,
+            l.board_id
+        FROM list l
+        WHERE l.board_id = ?
+        ORDER BY l.name ASC;
+    """, (board_id,)).fetchall()
+
+    return [dict(row) for row in lists]
